@@ -1,1 +1,1 @@
-# minesweeper-neural-network-ai
+# Minesweeper Neural Network AI

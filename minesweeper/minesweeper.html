@@ -1,0 +1,187 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta name="author" content="Shep" />
+  <meta name="Description" content="Free Online Minesweeper Game in Javascript" />
+  <meta name="KeyWords" content="Minesweeper, Javascript, Minesweeper Game, Free Minesweeper Online Game" />
+  <title>Minesweeper Game in Javascript</title>
+
+
+<script type="text/javascript" src="minecookie.js"></script>
+
+<script type="text/javascript">
+    // When "Start Game" is clicked, launch the main "minecore" file.
+    function gameStart() {
+        setCookie("referrer",document.referrer);
+        window.open('minecore.html','minesweeper','toolbar=0,directories=0,menubar=0,scrollbars=0,resizable=1,width=1,height=1,dependent=0,status=0'); }
+</script>
+
+</head>
+
+<body>
+  <div>
+		<p align="center">
+			<font size="2">
+
+			</font>
+		</p>
+		<hr />
+
+		<p align="center"><font size="7">Minesweeper</font><br />
+		<font size="2"><i>A free, online minesweeper game written in Javascript for gamers and programmers</i></font>
+		</p>
+
+		<p align="center">How to play: Its just like regular minesweeper!</p>
+		
+
+<div style="border:5px solid green;">
+<p align="center">
+<b>We've now been online for over 20 years!</b><br>
+<b>And we just passed 100 million games played!</b>
+</p>
+<p align="center">
+Thanks to everyone who has played Javascript Minesweeper, both here and on other sites and apps<br>
+We've been going strong for 20 years and the game has held up remarkably well.<br>
+Looking forward to the next 20 years and the next 100 million plays!<br>
+<font size="2">
+(For the 1st decade I didn't keep the logs so the 100 million is actually just from the last 10 years)<br>
+(also I don't have an exact date when I initially published but it was some time in late May 1997)<br>
+</font>
+</p>
+</div>
+
+    	<p align="center"><font size="2">
+		You may need to permit requested popups for the Minsweeper game window to appear.<br />
+		If you are using a Mac or a one-button mouse, use the space bar to mark bombs.<br />
+    	 If you want to save your high scores locally then please enable cookies.   
+		</font></p>
+
+		
+		<form name="introForm" action="ignore">
+    		<p align="center">
+    		    <input type="button" value="Start Game" style="font-size:large; background-color:orange;" onclick="gameStart();" />
+    		</p>
+		</form>
+        
+		<p align="center">
+		Use the game's menus for options, instructions, technical notes, and high scores.</p>
+
+        <hr>
+    	
+		<p>
+		I wrote this in 1997 as a way of learning Javascript, originally for Netscape and IE 4.x. 
+		The standards have moved on since then but with only a few tweaks the game continues to 
+		work well in modern browsers.
+        Since then it has been used as the basis for many Minsweeper apps, widgets, and other
+        Minesweeper game sites.
+	  </p>
+		
+		<p>
+		If you want to use/redistribute Javascript Minesweeper, that's great, just add a link back to my site.
+		You can download the source code <a href="help/jsminedemo.zip">here</a>. 
+		Contact me to get the latest-and-greatest source code and so I can fix any issues on new platforms.
+		My email is on the About page within the game.</p>
+		
+		<hr />
+
+    <p>		
+		  The <a href="http://en.wikipedia.org/wiki/Minesweeper_%28computer_game%29">
+		      	Wikipedia</a> Minesweeper page does a better job than I of maintaining links to other minesweeper resources.
+	  </p>
+		
+    <p>		
+      <a href="http://www.collegehumor.com/video/2200127/elephant-larry-minesweeper---the-movie">collegehumor.com</a>
+      made an awesome Minesweeper movie. A must see for all serious and bored Minesweeper players.
+	  </p>
+
+		<hr />
+
+		<p align="center">
+		<a rel="license" href="http://creativecommons.org/licenses/by/3.0/">
+		<img alt="Creative Commons License" style="border-width:0" src="http://creativecommons.org/images/public/somerights20.png" />
+		</a>
+		<br />This work is licensed under a 
+		<a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.
+		</p>
+	
+  <hr />
+
+	<p align="center"><font size="2">Written by D. Shep Poor 1997-2017</font><br />
+	<font size="2">Based on Microsoft Minesweeper (Win 3.1 edition) Copyright &copy; 1981-1995 Microsoft Corporation</font></p>
+	
+
+<script type="text/javascript">
+<!--
+	// Image preload - an attempt to make it not quite so painful.
+   blankCell = new Image(16,16);
+   blankCell.src = "images/blank.gif";
+
+   faceSmile = new Image(26,26);
+   faceSmile.src = "images/facesmile.gif";
+   faceWait = new Image(26,26);
+   faceWait.src = "images/faceclock.gif";
+
+   borderlr = new Image(16,16);
+   borderlr.src = "images/borderlr.gif"
+   borderbl = new Image(16,16);
+   borderbl.src = "images/borderbl.gif"
+   borderbr = new Image(16,16);
+   borderbr.src = "images/borderbr.gif"
+   borderjointr = new Image(16,16);
+   borderjointr.src = "images/borderjointr.gif"
+   borderjointl = new Image(16,16);
+   borderjointl.src = "images/borderjointl.gif"
+   bordertb = new Image(16,16);
+   bordertb.src = "images/bordertb.gif"
+   bordertl = new Image(16,16);
+   bordertl.src = "images/bordertl.gif"
+   bordertr = new Image(16,16);
+   bordertr.src = "images/bordertr.gif"
+
+   timeDigits = new Array(10);
+   for (l=0; l <= 9; l++) {
+      timeDigits[l] = new Image(23,13); 
+      tstr = "images/time" + l + ".gif";
+      timeDigits[l].src = tstr; }
+   timeNeg = new Image(23,13);
+   timeNeg.src = "images/time-.gif";
+
+   cellOpenIm = new Array(9);
+   for (l=0; l<=8; l++) {
+      cellOpenIm[l] = new Image(16,16);
+      tstr = "images/open" + l + ".gif";
+      cellOpenIm[l].src = tstr; }
+
+   menuNotChecked = new Image(10,10);
+   menuNotChecked.src = "images/notchecked.gif";
+   menuChecked = new Image(10,10);
+   menuChecked.src = "images/checked.gif";
+
+   bombFlagged = new Image(16,16);
+   bombFlagged.src = "images/bombflagged.gif";
+   bombRevealed = new Image(16,16);
+   bombRevealed.src = "images/bombrevealed.gif";
+   bombMisFlagged = new Image(16,16);
+   bombMisFlagged.src = "images/bombmisflagged.gif";
+   bombDeath = new Image(16,16);
+   bombDeath.src = "images/bombdeath.gif";
+   bombQuestion = new Image(16,16);
+   bombQuestion.src = "images/bombquestion.gif";
+
+   faceOoh = new Image(26,26);
+   faceOoh.src = "images/faceooh.gif";
+   faceDead = new Image(26,26);
+   faceDead.src = "images/facedead.gif";
+   faceWin = new Image(26,26);
+   faceWin.src = "images/facewin.gif";
+   facePirate = new Image(26,26);
+   facePirate.src = "images/facepirate.gif";
+
+   movesDigits0 = new Image(23,13); 
+   movesDigits0.src = "images/moves0.gif";
+//-->
+</script>
+
+</div>
+</body>
+</html>

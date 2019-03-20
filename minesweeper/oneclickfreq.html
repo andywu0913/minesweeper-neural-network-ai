@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>MineSweeper - One Click Win Frequency Analysis</title>
+
+<script type="text/javascript">
+
+// A few globals (so the recursive fns don't need extra params)
+var maxX, maxY;             // Board width and height as n-1 for easy 0..n-1 array indexing.
+var maxCells;               // Calc'd based on maxX and maxY. Also as 0..n-1.
+var indxCenter;             // Index for the center of the 2-dimensional board
+var maxNumBombs;            // Number of bombs, as n.
+var isaBombArray;           // Flat (one dimension) board array. Set to 1 for bombs, 0 otherwise.
+var hasBombNeighbors;       // Set to 1 if has any neighbor bombs. Also 1 if it is a bomb.
+
+// no need for jQuery, but the $ shortcut is quite handy. For a single DOM object, not collections.
+function $(id) { return document.getElementById(id); }  
+
+// This turns the board layout into a base64 string for easy transport as a single param.
+// The output string contains the dimensions (bytes 0 & 1) and the location of all bombs as bits,
+// 6 cells per base64 byte.
+// This fn is completely unnessary for this page but fun for some future ideas...
+function boardToBase64() {
+    var base64Vec="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var bits=0;         // builds up the 6 bits used to create the next base64 character
+    var strResult="";
+    for (var indx=0; indx<=maxCells; indx++) {
+      // Every 6 cells, push the new base64 charcter into the result string.
+      if ((indx > 0) && ((indx % 6) == 0)) {
+        strResult += base64Vec.charAt(bits);
+        bits = 0;
+      }
+      // Builds a byte from 1st bit up to the 6th bit.
+      bits = bits | (isaBombArray[indx] * (1 << (indx%6)));  // Shifting is faster than Math.pow() for base 2 powers
+    }
+    // Prepend the board dimensions, and append the remaining bits.
+    // The remaining bits may not be a full 6 bits, but any unused bits were initialized to 0 anyway.
+    strResult = base64Vec.charAt(maxX) + base64Vec.charAt(maxY) + strResult + base64Vec.charAt(bits);
+    return strResult;
+}
+
+
+// Format the board into the log so it is easier to read.
+// Using various utf-8 chars in the console log, looks better than normal "*#."
+// This fn is also not necessary for the task at hand, but a nice routine to validate the results.
+function prettyPrintBoard(thisIteration) {
+    console.groupCollapsed("Board for iteration "+thisIteration.toLocaleString());
+    console.log("Binary Array: "+isaBombArray.join(""));
+    console.log("base64 Encoded: "+boardToBase64());
+    var strOut="";
+    var indx;
+    for (var y=0; y<=maxY; y++) {
+        for (var x=0; x<=maxX; x++) {
+            indx = x+y*(maxX+1);
+            if (isaBombArray[indx]==1) strOut += "\u273d" //  Heavy Teardrop-Spoked Asterisk
+            else if (hasBombNeighbors[indx]==1) strOut += "\u2022"  // bullet
+            else if (indx==indxCenter) strOut += "\u2715" // cross (multiply). Marked the click point.
+            else strOut += "\u00B7";    // middot
+        }
+        console.log(strOut+"  "+y);   // Trailing row # prevents firefox console from collapsing lines
+        strOut = "";
+    }
+    console.groupEnd();
+}
+
+
+
+// Return the number of continuous empty cells from a starting point.
+// This is a recursive function, called initally with the middle cell.
+// Note this is destructive to hasBombNeighbors, sets empty cells to "99" as it goes.
+// (No need to clone hasBombNeighbors since this is the last step before the next iteration anyway.)
+function countContinuousEmptyCells(indx) {
+    var cnt = 0;    // Sum of empty cells including successive recursive calls.
+    if (hasBombNeighbors[indx]==0) {
+        cnt++;
+        hasBombNeighbors[indx]=99; // Flag this cell so it isn't encountered again
+        // Checks bounds here since it can't identify left/right wrap around after the recursive call.
+        if (indx % (maxX+1) > 0) cnt += countContinuousEmptyCells(indx-1);          // left
+        if (indx > maxX) cnt += countContinuousEmptyCells(indx-(maxX+1));           // above
+        if ((indx+1) % (maxX+1) > 0) cnt += countContinuousEmptyCells(indx+1);      // right
+        if (indx+maxX < maxCells) cnt += countContinuousEmptyCells(indx+(maxX+1));  // below
+    }
+    return cnt;
+}
+
+
+
+// This is the main routine
+function startProcess() {
+
+    // The console is required (I especially love the grouping and timing capabilities)
+    // IE doesn't support these. This test checks and dumps out if the console is not there or not fully implemented.
+    if (( window.console == undefined) || (window.console.time == undefined)) {
+      $("divResult").innerHTML="Your browser doesn't seem to support the console API as used on this page. For Chrome press Ctrl-Shift-J, for Firefox press Ctrl-Shift-K. It will not work in IE 10 and below.";
+      return;
+    }
+
+    // Note that some vars are global so they can be used in the above fns.
+    var i, j;           // Reused for looping through x and y dimensions
+    var x, y;           // board x and y coordinates for a given array index
+    var indx;           // Reused index into the arrays
+    var iterations;    // main loop
+    var candidates = 0; // simple counter, report stats at the end
+    var success = 0;    // simple counter, report stats at the end
+    var emptyCells;     // Needed in the last step: # of cells that have no neighbor bombs
+    var isBoardOk, hasOpenNeighbor;     // Flags used while processing
+    
+    // Load the variables from the input fields, initialize variables
+    // (Not validating or sanitizing, just local running anyway)
+    maxX = parseInt($("fldWidth").value) - 1;
+    maxY = parseInt($("fldHeight").value) - 1;
+    maxCells = (maxX+1)*(maxY+1)-1;
+    maxNumBombs = parseInt($("fldBombs").value);
+    iterations = parseInt($("fldIterations").value);
+    isaBombArray = new Array(maxCells);
+    hasBombNeighbors = new Array(maxCells);
+    indxCenter = Math.floor((maxY+1) / 2)*(maxX+1) + Math.floor((maxX+1) / 2);
+    
+    console.log("Started for "+iterations.toLocaleString()+" iterations");
+    console.time("One-Click-Win Minesweeper Boards Frequency Tool");
+
+    for (var mainloop=0; mainloop < iterations; mainloop++) {
+        // Initialize the board
+        for (indx=0; indx<=maxCells; indx++) {
+            isaBombArray[indx] = 0;
+            hasBombNeighbors[indx] = 0;
+        }
+
+        // Create the new board
+        for (var bombs=0; bombs<maxNumBombs; bombs++) {
+            // Pick a randome place for a bomb
+            // Careful here: if you set it to more bombs then cells you will be stuck in the do loop forever.
+            do { indx = Math.floor(Math.random() * (maxCells+1)); }
+              // Must not already be marked as a bomb
+              // Also assumes that FirstClickUseful is on and the user has clicked in the middle.
+              // Careful with the math to exclude the center 9 cells!
+              while (! ((isaBombArray[indx] == 0) && (
+                (indx<(indxCenter-maxX-2)) || 
+                (indx>(indxCenter+maxX+2)) ||
+                ((indx>(indxCenter-maxX)) && (indx<indxCenter-1)) ||
+                ((indx<(indxCenter+maxX)) && (indx>indxCenter+1)) ) ) );
+            isaBombArray[indx] = 1;
+            // Traverse the adjacent cells, marking that they have a neighbor bomb
+            x = indx % (maxX+1);
+            y = Math.floor(indx / (maxX+1));
+            for (i=x-1; i<=x+1; i++) {
+                for (j=y-1; j<=y+1; j++) {
+                    if ((0<=i) && (i<=maxX) && (0<=j) && (j<=maxY)) {
+                        hasBombNeighbors[i+j*(maxX+1)] = 1; } } }
+        }
+
+        // Make sure each cell is a bomb, is an open cell, or has an open cell neighbor.
+        // This determines if the board is a "candidate", but it still may not have continuous empty space.
+        isBoardOk = true;
+        for (indx=0; indx<=maxCells; indx++) {
+            if (isaBombArray[indx]==0) {
+                if (hasBombNeighbors[indx]==1) {
+                    x = indx % (maxX+1);
+                    y = Math.floor(indx / (maxX+1));
+                    hasOpenNeighbor = false;
+                    for (i=x-1; i<=x+1; i++) {
+                        for (j=y-1; j<=y+1; j++) {
+                            if ((0<=i) && (i<=maxX) && (0<=j) && (j<=maxY)) {
+                                if (hasBombNeighbors[i+j*(maxX+1)]==0) hasOpenNeighbor = true;
+                    } } }
+                    if (! hasOpenNeighbor) {
+                        isBoardOk = false;
+                        break;
+                    }
+        } } }
+
+        if (isBoardOk) {
+            // So far so good, passed rule #1.
+            candidates++;
+            
+            // Count how many empty cell spaces there are
+            emptyCells = 0;
+            for (indx=0; indx<=maxCells; indx++) {
+                if ((isaBombArray[indx]==0) && (hasBombNeighbors[indx]==0)) emptyCells++;
+            }
+
+            // Determine if the empty cell space is continuous
+            // Since the center is being blocked out (assume click in the center), use that as the starting point.
+            if (emptyCells == countContinuousEmptyCells(indxCenter)) {
+                success++;
+                prettyPrintBoard(mainloop);
+            }
+        }
+    }
+
+    console.timeEnd("One-Click-Win Minesweeper Boards Frequency Tool");
+    console.log("In "+iterations.toLocaleString()+" iterations, found "+candidates+" candidates, of which "+success+" are single-click-to-win boards");
+    $("divResult").innerHTML="In "+iterations.toLocaleString()+" iterations, found "+candidates+" candidates, of which "+success+" are single-click-to-win boards";
+}
+
+</script>
+
+</head>
+
+<body>
+	<h1>MineSweeper - One Click Win Frequency Analysis</h1>
+	<p>
+        This runs through a series of randomly generated beginner (8x8) Minesweeper boards, 
+        and determines if the each board is solvable in a single click.
+	</p>
+
+	<p>
+    To be one-click solvable, the following must be true:
+	</p>
+  <ol>
+      <li>All non-bomb cells must be adjacent to at least one open cell (a cell with no bomb neighbors)</li>
+      <li>The open cells must be continuous</li>
+  </ol>
+
+	<p>All output is sent to the console log, not to the browser window.
+        Run this in <strong>Chrome</strong> and <strong>press Ctrl-Shift-J</strong>, or
+        run in <strong>Firefox</strong> and <strong>press Ctrl-Shift-K</strong>.
+        IE 9 does not work.
+        This is important, if you don't this page won't appear to do anything!</p>
+
+    <p>
+        Board width: <input type="text" id="fldWidth" size="2" value="8"><br />
+        Board height: <input type="text" id="fldHeight" size="2" value="8"><br />
+        Number of bombs: <input type="text" id="fldBombs" size="2" value="10"><br />
+        Number of iterations: <input type="text" id="fldIterations" size="12" value="1000000"> (one million is the default, takes a couple of seconds. Should return about 7 hits.)
+    </p>
+
+    <p>
+    	<strong>Press the <a href="javascript:startProcess();">Go</a> button</strong>
+    </p>
+    <em><div id="divResult"></div></em>
+    <p>Findings:</p>
+    <ul>
+        <li>Approximately .00525% (525 in 10 million) are candidates 
+            (satisfies rule 1, but not necessarily rule 2).</li>
+        <li>Assuming the first click always opens empty space and the user has clicked in the middle, 
+            the number of candidates jumps to .009% (900 in 10 million)</li>
+        <li>After 100 million trials, it found 664 successes (passed both rule 1 and 2). That is .000664%, or about 1 in 150k.</li>
+        <li>With about 6 million beginner games played to completion so far, 
+            that would be about 40 games that have been completed in just one click.</li>
+        <li>Conclusion: It is silly to have an all time Beginner leader board.</li>
+        <li>After 1 billion iterations on Intermediate (16x16, 40 bombs) there weren't even any candidates (rule 1).</li>
+    </ul>
+
+    <p>Notes:</p>
+    <ul>
+        <li>Can't easily traverse the whole space, there are 1.85e19 permutations in the 64 bit space, of which
+            5.5e17 represent a beginner board (10 bits/bombs turned on). At 1 millon per second that
+            would still take years.</li>
+        <li>See http://www.mathsisfun.com/combinatorics/combinations-permutations-calculator.html for
+            a great permutations calculator.</li>
+        <li>This method does a random construction of valid beginner boards, and assumes the user clicked
+            in the middle and that the first click is always opening an empty space.
+            To play with the XP version of a beginner board, change the dimensions to 9x9.</li>
+        <li>This runs locally in your browser so you can <a href="view-source:http://www.chezpoor.com/minesweeper/oneclickfreq.html">view the source</a>, save it locally, and try your own mods. Let me know if you extend it
+            in a cool way.</li>
+        <li>Works in Chrome and Firefox, and does not work in IE 9. Not sure about IE 10.
+            <a href="https://developers.google.com/chrome-developer-tools/docs/console">Chrome's Console API</a>.</li>
+        <li>And be careful, if you put in
+            bad parameters you could have either a huge console log and/or tie up your CPU until you kill it.</li>
+    </ul>
+    
+    <p>Updates:</p>
+    <ul>
+        <li>20130305: Finished, first put online.</li>
+        <li>20130306: Did some quick performace testing. Chrome is about 2x Firefox and about 3x IE 9.
+            To get it to work in IE 9 I had to temporarily zap some of the console functionality. Also,
+            apparently any try/catch structures anywhere cause Chrome and Firefox to run at about 1/3 the speed.</li>
+        <li>20130309: Added a single line of output in the HTML so there is something to see 
+            if the user doesn't use the console. Also added a quick test so if the console doesn't appear to 
+            be working it dumps out. Plus a few cleanup items and comments. This should be the last update.</li>
+    </ul>
+
+    <p>Want to discuss? You can email me at &quot;sheppoor at dataexperts.com&quot; or better yet leave a comment
+        on my <a href="http://onelastbit.com/?p=604">blog post on the subject.</a></p>
+
+    <p>Published under the <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported license</a>.</p>     
+</body>
+</html>
