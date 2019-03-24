@@ -6,13 +6,13 @@ import random
 class Board():
 
 	def __init__(self):
-		self.resolution_scale = 2
+		self.resolution_scale = 2 # Mac retina display has doubled the resolution
 		self.game_row = 24	# Beginner: 8  Intermediate: 16  Expert: 16  Max: 24
 		self.game_col = 32	# Beginner: 8  Intermediate: 16  Expert: 31  Max: 32
-		self.row_height = 16 * self.resolution_scale
-		self.col_width  = 16 * self.resolution_scale
-		self.screen_start_x = 42
-		self.screen_start_y = 418
+		self.row_height = 16 * self.resolution_scale # Original picture 16px
+		self.col_width  = 16 * self.resolution_scale # Original picture 16px
+		self.screen_start_x = 21 * self.resolution_scale  # Position in original resolution
+		self.screen_start_y = 209 * self.resolution_scale # Position in original resolution
 
 		self.gameBoard = None
 		self.board_status = np.zeros((self.game_row, self.game_col), dtype=int)
@@ -40,29 +40,29 @@ class Board():
 				self.board_position[i][j] = [x, y]
 
 	def get_block_status(self, x, y):
-		if np.array_equal(self.gameBoard[y - (self.row_height / 8), x - (self.row_height / 8)], np.array([143, 143, 143])):
+		if np.array_equal(self.gameBoard[int(y - (self.row_height / 8)), int(x - (self.row_height / 8))], np.array([143, 143, 143])):
 			return -2 # Opened Bomb
-		if np.array_equal(self.gameBoard[y + (self.row_height / 8), x], np.array([42, 42, 42])):
+		if np.array_equal(self.gameBoard[int(y + (self.row_height / 8)), int(x)], np.array([42, 42, 42])):
 			return -1 # Flag
-		if np.array_equal(self.gameBoard[y- self.row_height / 2, x- self.col_width / 2], np.array([255, 255, 255])):
+		if np.array_equal(self.gameBoard[int(y - self.row_height / 2), int(x - self.col_width / 2)], np.array([255, 255, 255])):
 			return 0 # Undetermined Block
-		if np.array_equal(self.gameBoard[y, x], np.array([251, 36, 11])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([251, 36, 11])):
 			return 1 # 1 Blue
-		if np.array_equal(self.gameBoard[y, x], np.array([28, 126, 25])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([28, 126, 25])):
 			return 2 # 2 Green
-		if np.array_equal(self.gameBoard[y, x], np.array([27, 13, 252])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([27, 13, 252])):
 			return 3 # 3 Red
-		if np.array_equal(self.gameBoard[y, x], np.array([121, 11, 2])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([121, 11, 2])):
 			return 4 # 4 Dark Blue
-		if np.array_equal(self.gameBoard[y, x], np.array([7, 3, 122])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([7, 3, 122])):
 			return 5 # 5 Dark Red
-		if np.array_equal(self.gameBoard[y, x], np.array([122, 123, 16])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([122, 123, 16])):
 			return 6 # 6 Cyan
-		if np.array_equal(self.gameBoard[y, x + self.col_width / 8], np.array([0, 0, 0])):
+		if np.array_equal(self.gameBoard[int(y), int(x + self.col_width / 8)], np.array([0, 0, 0])):
 			return 7 # 7 Black
-		if np.array_equal(self.gameBoard[y, x], np.array([123, 123, 123])):
+		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([123, 123, 123])):
 			return 8 # 8 Gray
-		if np.mean(self.gameBoard[y - (self.row_height / 8):y + (self.row_height / 8), x - (self.col_width / 8):x + (self.col_width / 8)]) == 189:
+		if np.mean(self.gameBoard[int(y - (self.row_height / 8)):int(y + (self.row_height / 8)), int(x - (self.col_width / 8)):int(x + (self.col_width / 8))]) == 189:
 			return 9 # Opened Block
 		else:
 			return -99 # Cannot determine
@@ -97,13 +97,13 @@ class Board():
 		if bomb_num == len(current_surrounding):
 			for i, j in current_surrounding:
 				# print '(' + str(row) + ', ' + str(col) + ')' +  str([i, j])
-				pyautogui.click(self.screen_start_x / 2 + self.board_position[i][j][0] / 2, self.screen_start_y / 2 + self.board_position[i][j][1] / 2, button = 'right')
+				pyautogui.click((self.screen_start_x + self.board_position[i][j][0]) / self.resolution_scale, (self.screen_start_y + self.board_position[i][j][1]) / self.resolution_scale, button = 'right')
 				self.board_status[i, j] = -1
 
 		# Open block
 		if bomb_num == 0:
 			for i, j in current_surrounding:
-				pyautogui.click(self.screen_start_x / 2 + self.board_position[i][j][0] / 2, self.screen_start_y / 2 + self.board_position[i][j][1] / 2)
+				pyautogui.click((self.screen_start_x + self.board_position[i][j][0]) / self.resolution_scale, (self.screen_start_y + self.board_position[i][j][1]) / self.resolution_scale)
 				block_status_temp = self.get_block_status(self.board_position[i][j][0], self.board_position[i][j][1])
 				self.update_board_status()
 
@@ -111,7 +111,7 @@ class Board():
 		# Starting of the game
 		if np.mean(self.board_status) == 0:
 			random_block = self.board_position[random.randrange(self.game_row)][random.randrange(self.game_col)]
-			pyautogui.click(self.screen_start_x / 2 + random_block[0] / 2, self.screen_start_y / 2 + random_block[1] / 2)
+			pyautogui.click((self.screen_start_x + random_block[0]) / self.resolution_scale, (self.screen_start_y + random_block[1]) / self.resolution_scale)
 		# A bomb shown in any block
 		elif any(-2 in row for row in self.board_status):
 			print('Lose')
