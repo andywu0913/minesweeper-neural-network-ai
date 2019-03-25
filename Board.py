@@ -61,31 +61,50 @@ class Board():
 				x = self.col_width / 2 + self.col_width * j
 				self.board_position[i][j] = [x, y]
 
+	def block_color_avg(self, x, y):
+		return np.mean(
+			np.mean(
+				self.gameBoard[
+					int(y - (self.row_height / 4)):int(y + (self.row_height / 4)),
+					int(x - (self.col_width / 4)):int(x + (self.col_width / 4))
+				], axis=0
+			), axis=0
+		)
+
 	def get_block_status(self, x, y):
-		if np.array_equal(self.gameBoard[int(y - (self.row_height / 8)), int(x - (self.row_height / 8))], np.array([143, 143, 143])):
-			return -2 # Opened Bomb
-		if np.array_equal(self.gameBoard[int(y + (self.row_height / 8)), int(x)], np.array([42, 42, 42])):
-			return -1 # Flag
-		if np.array_equal(self.gameBoard[int(y - self.row_height / 2), int(x - self.col_width / 2)], np.array([255, 255, 255])):
-			return 0 # Undetermined Block
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([251, 36, 11])):
+
+		color = self.block_color_avg(x, y)
+		tolerance = 5
+		
+		if (abs(color[0] - 189) <= tolerance) and (abs(color[1] - 189) <= tolerance) and (abs(color[2] - 189) <= tolerance):
+			if (abs(self.gameBoard[int(y - (self.row_height / 2)), int(x - (self.col_width / 2))][0] - 255) <= tolerance) and (abs(self.gameBoard[int(y - (self.row_height / 2)), int(x - (self.col_width / 2))][1] - 255) <= tolerance) and (abs(self.gameBoard[int(y - (self.row_height / 2)), int(x - (self.col_width / 2))][2] - 255) <= tolerance):
+				return 0 # Undetermined Block
+			else:
+				return 9 # Opened Block
+		if (abs(color[0] - 218.68359375) <= tolerance) and (abs(color[1] - 115.4921875) <= tolerance) and (abs(color[2] - 103.37109375) <= tolerance):
 			return 1 # 1 Blue
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([28, 126, 25])):
+		if (abs(color[0] - 84.9453125) <= tolerance) and (abs(color[1] - 148.4765625) <= tolerance) and (abs(color[2] - 83.1328125) <= tolerance):
 			return 2 # 2 Green
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([27, 13, 252])):
+		if (abs(color[0] - 98.4140625) <= tolerance) and (abs(color[1] - 90.7734375) <= tolerance) and (abs(color[2] - 224.15625) <= tolerance):
 			return 3 # 3 Red
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([121, 11, 2])):
+		if (abs(color[0] - 144.375) <= tolerance) and (abs(color[1] - 72.046875) <= tolerance) and (abs(color[2] - 66.296875) <= tolerance):
 			return 4 # 4 Dark Blue
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([7, 3, 122])):
+		if (abs(color[0] - 75.44921875) <= tolerance) and (abs(color[1] - 72.9921875) <= tolerance) and (abs(color[2] - 147.28515625) <= tolerance):
 			return 5 # 5 Dark Red
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([122, 123, 16])):
+		if (abs(color[0] - 143.265625) <= tolerance) and (abs(color[1] - 143.7578125) <= tolerance) and (abs(color[2] - 70.84765625) <= tolerance):
 			return 6 # 6 Cyan
-		if np.array_equal(self.gameBoard[int(y), int(x + self.col_width / 8)], np.array([0, 0, 0])):
+		if (abs(color[0] - 109.99609375) <= tolerance) and (abs(color[1] - 109.99609375) <= tolerance) and (abs(color[2] - 109.99609375) <= tolerance):
 			return 7 # 7 Black
-		if np.array_equal(self.gameBoard[int(y), int(x)], np.array([123, 123, 123])):
+		if (abs(color[0] - 139.90625) <= tolerance) and (abs(color[1] - 139.90625) <= tolerance) and (abs(color[2] - 139.90625) <= tolerance):
 			return 8 # 8 Gray
-		if np.mean(self.gameBoard[int(y - (self.row_height / 8)):int(y + (self.row_height / 8)), int(x - (self.col_width / 8)):int(x + (self.col_width / 8))]) == 189:
-			return 9 # Opened Block
+		if (abs(color[0] - 122.296875) <= tolerance) and (abs(color[1] - 118.71875) <= tolerance) and (abs(color[2] - 179.8515625) <= tolerance):
+			return -1 # Flag
+		if (abs(color[0] - 18.2734375) <= tolerance) and (abs(color[1] - 17.04296875) <= tolerance) and (abs(color[2] - 37.515625) <= tolerance):
+			return -2 # Current Opened Bomb
+		if (abs(color[0] - 32.125) <= tolerance) and (abs(color[1] - 32.125) <= tolerance) and (abs(color[2] - 32.125) <= tolerance):
+			return -3 # Other Opened Bomb
+		if (abs(color[0] - 26.8984375) <= tolerance) and (abs(color[1] - 21.37109375) <= tolerance) and (abs(color[2] - 116.578125) <= tolerance):
+			return -4 # Misplaced Flag
 		else:
 			return -99 # Cannot determine
 
@@ -101,8 +120,8 @@ class Board():
 		for i in range(0, self.game_row):
 			for j in range(0, self.game_col):
 				self.board_status[i, j] = self.get_block_status(self.board_position[i][j][0], self.board_position[i][j][1])
-		# print(np.matrix(self.board_status))
-		# print('\n')
+		print(np.matrix(self.board_status))
+		print('\n')
 
 	def check_surrounding(self, row, col):
 		bomb_num = self.board_status[row][col]
