@@ -1,38 +1,60 @@
 import numpy as np
 import pyautogui
+from PIL import Image
 from mss import mss
 import random
 
 class Board():
 
-	def __init__(self):
-		self.resolution_scale = 2 # Mac retina display has doubled the resolution
-		self.game_row = 24	# Beginner: 8  Intermediate: 16  Expert: 16  Max: 24
-		self.game_col = 32	# Beginner: 8  Intermediate: 16  Expert: 31  Max: 32
+	def __init__(self, resolution_scale=1, screen_start_x=21, screen_start_y=209, game_row=8, game_col=8):
+		self.resolution_scale = resolution_scale # Mac retina display has doubled the resolution
+		self.screen_start_x = screen_start_x * self.resolution_scale # Position in original resolution
+		self.screen_start_y = screen_start_y * self.resolution_scale # Position in original resolution
+		self.game_row = game_row # Beginner: 8  Intermediate: 16  Expert: 16  Max: 24
+		self.game_col = game_col # Beginner: 8  Intermediate: 16  Expert: 31  Max: 32
 		self.row_height = 16 * self.resolution_scale # Original picture 16px
 		self.col_width  = 16 * self.resolution_scale # Original picture 16px
-		self.screen_start_x = 21 * self.resolution_scale  # Position in original resolution
-		self.screen_start_y = 209 * self.resolution_scale # Position in original resolution
-
 		self.gameBoard = None
-		self.board_status = np.zeros((self.game_row, self.game_col), dtype=int)
-		self.board_position = [[[0, 0] for x in range(self.game_col)] for y in range(self.game_row)]
+		self.board_status = None
+		self.board_position = None
 
-		np.set_printoptions(linewidth=np.inf)
-		pyautogui.PAUSE = 0.02
 		self.locate_gameBoard_coordinate()
 		self.make_position_table()
-		
+		pyautogui.PAUSE = 0.02
+		np.set_printoptions(linewidth=np.inf)
+
 	def locate_gameBoard_coordinate(self):
 		try:
-			x, y = pyautogui.locateCenterOnScreen('images/board_left_top.png', grayscale=True, confidence=0.95)
-			self.screen_start_x = x
-			self.screen_start_y = y
-			print('Left top game board coordinate = (' + str(x) + ', ' + str(y) + ')')
+			img = Image.open(open('img_recognition_sample/tl.png', 'rb'))
+			img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+			tl_x, tl_y = pyautogui.locateCenterOnScreen(img, grayscale=True, confidence=0.95)
+			img = Image.open(open('img_recognition_sample/tr.png', 'rb'))
+			img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+			tr_x, tr_y = pyautogui.locateCenterOnScreen(img, grayscale=True, confidence=0.95)
+			img = Image.open(open('img_recognition_sample/bl.png', 'rb'))
+			img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+			bl_x, bl_y = pyautogui.locateCenterOnScreen(img, grayscale=True, confidence=0.95)
+			img = Image.open(open('img_recognition_sample/br.png', 'rb'))
+			img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+			br_x, br_y = pyautogui.locateCenterOnScreen(img, grayscale=True, confidence=0.95)
+
+			self.screen_start_x = tl_x + 10 * self.resolution_scale
+			self.screen_start_y = tl_y + 46 * self.resolution_scale
+			self.screen_end_x = br_x - 10 * self.resolution_scale
+			self.screen_end_y = br_y - 10 * self.resolution_scale
+			self.game_row = int((self.screen_end_y - self.screen_start_y) / self.row_height)
+			self.game_col = int((self.screen_end_x - self.screen_start_x) / self.col_width)
+			self.board_status = np.zeros((self.game_row, self.game_col), dtype=int)
+
+			print('Full Board Coordinate:')
+			print("({0:4d}, {1:4d}), ({2:4d}, {3:4d})".format(tl_x, tl_y, tr_x, tr_y))
+			print("({0:4d}, {1:4d}), ({2:4d}, {3:4d})".format(bl_x, bl_y, br_x, br_y))
+			print("Total rows and columns: {0}x{1}.".format(self.game_row, self.game_col))
 		except:
-			print('Auto locate game board coordinate failed. Use default value (' + str(self.screen_start_x) + ', ' + str(self.screen_start_y) + ').')
+			print("Auto locate game board coordinate failed. Use default value ({0}, {1}).".format(str(self.screen_start_x), str(self.screen_start_y)))
 
 	def make_position_table(self):
+		self.board_position = [[[0, 0] for x in range(self.game_col)] for y in range(self.game_row)]
 		for i in range(0, self.game_row):
 			y = self.row_height / 2 + self.row_height * i
 			for j in range(0, self.game_col):
@@ -79,8 +101,8 @@ class Board():
 		for i in range(0, self.game_row):
 			for j in range(0, self.game_col):
 				self.board_status[i, j] = self.get_block_status(self.board_position[i][j][0], self.board_position[i][j][1])
-		print(np.matrix(self.board_status))
-		print('\n')
+		# print(np.matrix(self.board_status))
+		# print('\n')
 
 	def check_surrounding(self, row, col):
 		bomb_num = self.board_status[row][col]
