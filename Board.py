@@ -7,7 +7,7 @@ import random
 class Board():
 
 	def __init__(self, resolution_scale=1, screen_start_x=21, screen_start_y=209, game_row=8, game_col=8):
-		self.resolution_scale = resolution_scale # Mac retina display has doubled the resolution
+		self.resolution_scale = resolution_scale # Mac retina display has doubled the pixels from its resolution
 		self.screen_start_x = screen_start_x * self.resolution_scale # Position in original resolution
 		self.screen_start_y = screen_start_y * self.resolution_scale # Position in original resolution
 		self.game_row = game_row # Beginner: 8  Intermediate: 16  Expert: 16  Max: 24
@@ -72,7 +72,6 @@ class Board():
 		)
 
 	def get_block_status(self, x, y):
-
 		color = self.block_color_avg(x, y)
 		tolerance = 5
 		
@@ -123,6 +122,81 @@ class Board():
 		print(np.matrix(self.board_status))
 		print('\n')
 
+	def get_board_status(self):
+		# Cannot determine
+		if any(-99 in row for row in self.board_status):
+			return -99
+		# Empty board, new game
+		if np.amax(self.board_status) == np.amin(self.board_status) == 0:
+			return 0
+		## A yellow background page shows you win
+		if np.allclose(self.gameBoard[0][0], np.array([77, 191, 253]), rtol=0, atol=5):
+			return 3
+		if np.allclose(self.gameBoard[0][len(self.gameBoard[0]) - 1], np.array([77, 191, 253]), rtol=0, atol=5):
+			return 3
+		if np.allclose(self.gameBoard[len(self.gameBoard) - 1][0], np.array([77, 191, 253]), rtol=0, atol=5):
+			return 3
+		if np.allclose(self.gameBoard[len(self.gameBoard) - 1][len(self.gameBoard[0]) - 1], np.array([77, 191, 253]), rtol=0, atol=5):
+			return 3
+		# Any bombs shown in the board
+		if any(-2 in row for row in self.board_status):
+			return 4
+		# No unopened block
+		if not any(0 in row for row in self.board_status):
+			return 2
+		# Game ongoing
+		return 1	
+	
+	def check_start_end(self):
+		status = self.get_board_status()
+		# Random click any block for empty board
+		if status == 0:
+			random_x, random_y = self.board_position[random.randrange(self.game_row)][random.randrange(self.game_col)]
+			pyautogui.click((self.screen_start_x + random_x) / self.resolution_scale, (self.screen_start_y + random_y) / self.resolution_scale)
+			print('New Game.')
+		# Dead, restart
+		elif status == 4:
+			print('Lose.')
+			self.click_yellow_face()
+			exit()
+		## Yellow background page shows you win
+		elif status == 3:
+			pyautogui.press('enter')
+			print('Yellow')
+			exit()
+		# Every block is opened
+		elif status == 2:
+			self.click_yellow_face()
+			print('Win.')
+			exit()
+		# Cannot determine
+		elif status == -99:
+			exit()
+
+	def click_yellow_face(self):
+		clicked = False
+		if not clicked:
+			try:
+				img = Image.open(open('img_recognition_sample/facedead.png', 'rb'))
+				img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+				tl_x, tl_y = pyautogui.locateCenterOnScreen(img, grayscale=False, confidence=0.95)
+				pyautogui.click(tl_x / self.resolution_scale, tl_y / self.resolution_scale)
+				clicked = True
+			except Exception as e:
+				pass
+
+		if not clicked:
+			try:
+				img = Image.open(open('img_recognition_sample/facewin.png', 'rb'))
+				img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+				tl_x, tl_y = pyautogui.locateCenterOnScreen(img, grayscale=False, confidence=0.95)
+				pyautogui.click(tl_x / self.resolution_scale, tl_y / self.resolution_scale)
+				clicked = True
+			except Exception as e:
+				pass
+
+		return clicked
+
 	def check_surrounding(self, row, col):
 		bomb_num = self.board_status[row][col]
 		current_surrounding = []
@@ -147,23 +221,3 @@ class Board():
 				pyautogui.click((self.screen_start_x + self.board_position[i][j][0]) / self.resolution_scale, (self.screen_start_y + self.board_position[i][j][1]) / self.resolution_scale)
 				block_status_temp = self.get_block_status(self.board_position[i][j][0], self.board_position[i][j][1])
 				self.update_board_status()
-
-	def check_start_end(self):
-		# Starting of the game
-		if np.mean(self.board_status) == 0:
-			random_block = self.board_position[random.randrange(self.game_row)][random.randrange(self.game_col)]
-			pyautogui.click((self.screen_start_x + random_block[0]) / self.resolution_scale, (self.screen_start_y + random_block[1]) / self.resolution_scale)
-		# A bomb shown in any block
-		elif any(-2 in row for row in self.board_status):
-			print('Lose')
-			exit()
-		# Yellow background page shows you win
-		elif (not any(0 in row for row in self.board_status) or np.array_equal(self.gameBoard[0][0], np.array([77, 191, 253]))):
-			# if :
-			print('Win')
-			# pyautogui.moveTo([210, 265])
-			# pyautogui.click()
-			# pyautogui.moveTo([85, 185])
-			# pyautogui.click()
-			exit()
-

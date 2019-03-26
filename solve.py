@@ -18,3 +18,9 @@ for x in range(0, 100):
 			for j in range(0, board.game_col):
 				if 1 <= board.board_status[i][j] <= 8:
 					board.check_surrounding(i, j)
+
+# board.update_board_status()
+# for i in range(0, len(board.gameBoard)):
+# 	for j in range(0, len(board.gameBoard[0])):
+# 		if np.array_equal(np.array([77, 191, 253]), board.gameBoard[i][j]):
+# 			print("({0}, {1})".format(i, j))
