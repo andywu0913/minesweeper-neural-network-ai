@@ -60,7 +60,11 @@
 
 <script type="text/javascript">
 <!--
-   document.write('<p><input type="button" name="closeButton" value="Close" onClick="window.close();"></p>');
+   document.write('<p><input id="close" type="button" name="closeButton" value="Close" onClick="window.close();"></p>');
+   document.addEventListener("keyup", function(event) {
+      if (event.keyCode == 13)
+         window.close();
+   });
 -->
 </script>
 </center>
