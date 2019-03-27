@@ -2,7 +2,6 @@ import numpy as np
 import pyautogui
 from PIL import Image
 from mss import mss
-import random
 
 class Board():
 
@@ -20,7 +19,7 @@ class Board():
 
 		self.locate_gameBoard_coordinate()
 		self.make_position_table()
-		pyautogui.PAUSE = 0.02
+		pyautogui.PAUSE = 0.05
 		np.set_printoptions(linewidth=np.inf)
 
 	def locate_gameBoard_coordinate(self):
@@ -104,6 +103,8 @@ class Board():
 			return -3 # Other Opened Bomb
 		if (abs(color[0] - 26.8984375) <= tolerance) and (abs(color[1] - 21.37109375) <= tolerance) and (abs(color[2] - 116.578125) <= tolerance):
 			return -4 # Misplaced Flag
+		if (abs(color[0] - 77) <= tolerance) and (abs(color[1] - 191) <= tolerance) and (abs(color[2] - 253) <= tolerance):
+			return -5 # In yellow background win page
 		else:
 			return -99 # Cannot determine
 
@@ -119,25 +120,19 @@ class Board():
 		for i in range(0, self.game_row):
 			for j in range(0, self.game_col):
 				self.board_status[i, j] = self.get_block_status(self.board_position[i][j][0], self.board_position[i][j][1])
-		print(np.matrix(self.board_status))
-		print('\n')
+		# print(np.matrix(self.board_status))
+		# print('\n')
 
-	def get_board_status(self):
+	def determine_board_status(self):
+		# A yellow background page shows you win
+		if any(-5 in row for row in self.board_status):
+			return 3
 		# Cannot determine
 		if any(-99 in row for row in self.board_status):
 			return -99
 		# Empty board, new game
 		if np.amax(self.board_status) == np.amin(self.board_status) == 0:
 			return 0
-		## A yellow background page shows you win
-		if np.allclose(self.gameBoard[0][0], np.array([77, 191, 253]), rtol=0, atol=5):
-			return 3
-		if np.allclose(self.gameBoard[0][len(self.gameBoard[0]) - 1], np.array([77, 191, 253]), rtol=0, atol=5):
-			return 3
-		if np.allclose(self.gameBoard[len(self.gameBoard) - 1][0], np.array([77, 191, 253]), rtol=0, atol=5):
-			return 3
-		if np.allclose(self.gameBoard[len(self.gameBoard) - 1][len(self.gameBoard[0]) - 1], np.array([77, 191, 253]), rtol=0, atol=5):
-			return 3
 		# Any bombs shown in the board
 		if any(-2 in row for row in self.board_status):
 			return 4
@@ -146,32 +141,6 @@ class Board():
 			return 2
 		# Game ongoing
 		return 1	
-	
-	def check_start_end(self):
-		status = self.get_board_status()
-		# Random click any block for empty board
-		if status == 0:
-			random_x, random_y = self.board_position[random.randrange(self.game_row)][random.randrange(self.game_col)]
-			pyautogui.click((self.screen_start_x + random_x) / self.resolution_scale, (self.screen_start_y + random_y) / self.resolution_scale)
-			print('New Game.')
-		# Dead, restart
-		elif status == 4:
-			print('Lose.')
-			self.click_yellow_face()
-			exit()
-		## Yellow background page shows you win
-		elif status == 3:
-			pyautogui.press('enter')
-			print('Yellow')
-			exit()
-		# Every block is opened
-		elif status == 2:
-			self.click_yellow_face()
-			print('Win.')
-			exit()
-		# Cannot determine
-		elif status == -99:
-			exit()
 
 	def click_yellow_face(self):
 		clicked = False
@@ -197,27 +166,12 @@ class Board():
 
 		return clicked
 
-	def check_surrounding(self, row, col):
-		bomb_num = self.board_status[row][col]
-		current_surrounding = []
-		for i in range(max(0, row - 1), min(self.game_row, row + 2)):
-			for j in range(max(0, col - 1), min(self.game_col, col + 2)):
-				if i == row and j == col:
-					continue
-				elif self.board_status[i, j] == -1:
-					bomb_num -= 1
-				elif self.board_status[i, j] == 0:
-					current_surrounding.append([i, j]);
-		# Detemine Bomb
-		if bomb_num == len(current_surrounding):
-			for i, j in current_surrounding:
-				# print '(' + str(row) + ', ' + str(col) + ')' +  str([i, j])
-				pyautogui.click((self.screen_start_x + self.board_position[i][j][0]) / self.resolution_scale, (self.screen_start_y + self.board_position[i][j][1]) / self.resolution_scale, button = 'right')
-				self.board_status[i, j] = -1
+	def close_yellow_page(self):
+		pyautogui.press('enter')
+		self.update_board_status()
+		if any(-5 in row for row in self.board_status):
+			return False
+		else:
+			return True
 
-		# Open block
-		if bomb_num == 0:
-			for i, j in current_surrounding:
-				pyautogui.click((self.screen_start_x + self.board_position[i][j][0]) / self.resolution_scale, (self.screen_start_y + self.board_position[i][j][1]) / self.resolution_scale)
-				block_status_temp = self.get_block_status(self.board_position[i][j][0], self.board_position[i][j][1])
-				self.update_board_status()
+
