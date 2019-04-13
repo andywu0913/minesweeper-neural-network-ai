@@ -31,7 +31,7 @@ class NeuralNetwork():
 
 		self.loss = tf.reduce_mean(tf.square(self.y_target - self.final_output))
 		self.my_opt = tf.train.GradientDescentOptimizer(0.005)
-		self.train_step = my_opt.minimize(self.loss)
+		self.train_step = self.my_opt.minimize(self.loss)
 		self.init = tf.global_variables_initializer()
 		self.sess.run(self.init)
 
