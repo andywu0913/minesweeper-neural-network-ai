@@ -18,12 +18,12 @@ class NeuralNetwork():
 		# b3 ---> output layer bias		1x1
 		self.hidden_layer_nodes = 81
 
-		self.A1 = tf.Variable(tf.random_normal(shape = [9, self.hidden_layer_nodes]))
-		self.b1 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]))
-		self.A2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes, self.hidden_layer_nodes]))
-		self.b2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]))
-		self.A3 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes, 1]))
-		self.b3 = tf.Variable(tf.random_normal(shape = [1]))
+		self.A1 = tf.Variable(tf.random_normal(shape = [9, self.hidden_layer_nodes]), name = 'A1')
+		self.b1 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]), name = 'b1')
+		self.A2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes, self.hidden_layer_nodes]), name = 'A2')
+		self.b2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]), name = 'b2')
+		self.A3 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes, 1]), name = 'A3')
+		self.b3 = tf.Variable(tf.random_normal(shape = [1]), name = 'b3')
 
 		self.hidden_output1 = tf.nn.relu(tf.add(tf.matmul(self.x_data, self.A1), self.b1))
 		self.hidden_output2 = tf.nn.relu(tf.add(tf.matmul(self.hidden_output1, self.A2), self.b2))
@@ -43,5 +43,14 @@ class NeuralNetwork():
 	def predict(self, observed_x):
 		return self.sess.run(self.final_output, feed_dict = {self.x_data: observed_x})
 
+	def saveModel(self):
+		self.saver = tf.train.Saver()
+		self.save_path = self.saver.save(self.sess, "./model.ckpt")
+		print("Model saved in path: %s" % self.save_path)
+
+	def restoreModel(self):
+		self.saver = tf.train.Saver()
+		self.saver.restore(self.sess, "./model.ckpt")
+		print("Model restored.")
 
 
