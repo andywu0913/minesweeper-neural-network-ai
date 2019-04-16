@@ -27,9 +27,9 @@ class NeuralNetwork():
 
 		self.hidden_output1 = tf.nn.relu(tf.add(tf.matmul(self.x_data, self.A1), self.b1))
 		self.hidden_output2 = tf.nn.relu(tf.add(tf.matmul(self.hidden_output1, self.A2), self.b2))
-		self.final_output = tf.nn.relu(tf.add(tf.matmul(self.hidden_output2, self.A3), self.b3))
+		self.final_output = tf.add(tf.matmul(self.hidden_output2, self.A3), self.b3)
 
-		self.loss = tf.reduce_mean(tf.square(self.y_target - self.final_output))
+		self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = self.final_output, lables = self.y_target))
 		self.my_opt = tf.train.GradientDescentOptimizer(0.005)
 		self.train_step = self.my_opt.minimize(self.loss)
 		self.init = tf.global_variables_initializer()
@@ -41,7 +41,7 @@ class NeuralNetwork():
 
 			
 	def predict(self, observed_x):
-		return self.sess.run(self.final_output, feed_dict = {self.x_data: observed_x})
+		return self.sess.run(tf.nn.sigmoid(self.final_output), feed_dict = {self.x_data: observed_x})
 
 
 	def saveModel(self):
