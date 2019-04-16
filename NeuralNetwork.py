@@ -6,19 +6,19 @@ class NeuralNetwork():
 
 	def __init__(self):
 		self.sess = tf.Session()
-		self.x_data = tf.placeholder(shape = [None, 9], dtype = tf.float32)
+		self.x_data = tf.placeholder(shape = [None, 8], dtype = tf.float32)
 		self.y_target = tf.placeholder(shape = [None, 1], dtype = tf.float32)
 
 		# set up neural network
-		# A1 ---> 1st layer weights		9x81
-		# b1 ---> 1st layer bias		1x81
-		# A2 ---> 2nd layer weights		81x81
-		# b2 ---> 2nd layer bias		1x81
-		# A3 ---> output layer weights	81x1
+		# A1 ---> 1st layer weights		8x64
+		# b1 ---> 1st layer bias		1x64
+		# A2 ---> 2nd layer weights		64x64
+		# b2 ---> 2nd layer bias		1x64
+		# A3 ---> output layer weights	64x1
 		# b3 ---> output layer bias		1x1
-		self.hidden_layer_nodes = 81
+		self.hidden_layer_nodes = 64
 
-		self.A1 = tf.Variable(tf.random_normal(shape = [9, self.hidden_layer_nodes]), name = 'A1')
+		self.A1 = tf.Variable(tf.random_normal(shape = [8, self.hidden_layer_nodes]), name = 'A1')
 		self.b1 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]), name = 'b1')
 		self.A2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes, self.hidden_layer_nodes]), name = 'A2')
 		self.b2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]), name = 'b2')
@@ -38,22 +38,24 @@ class NeuralNetwork():
 
 	def trainingData(self, observed_x, observed_y):
 		return self.sess.run(self.train_step, feed_dict = {self.x_data: observed_x, self.y_target: observed_y})
-			
 
+			
 	def predict(self, observed_x):
 		return self.sess.run(self.final_output, feed_dict = {self.x_data: observed_x})
 
+
 	def saveModel(self):
-		self.saver = tf.train.Saver()
-		self.save_path = self.saver.save(self.sess, "./model.ckpt")
-		print("Model saved in path: %s" % self.save_path)
+		saver = tf.train.Saver()
+		save_path = saver.save(self.sess, "./model.ckpt")
+		print("Model saved in path: {0}".format(save_path))
+
 
 	def restoreModel(self):
 		exists = os.path.isfile("./model.ckpt")
 
 		if exists:
-			self.saver = tf.train.Saver()
-			self.saver.restore(self.sess, "./model.ckpt")
+			saver = tf.train.Saver()
+			saver.restore(self.sess, "./model.ckpt")
 			print("Model restored.")
 			return 0
 		else:
