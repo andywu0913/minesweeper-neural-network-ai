@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 import os
 
-
 class NeuralNetwork():
 
 	def __init__(self):
@@ -50,7 +49,7 @@ class NeuralNetwork():
 		print("Model saved in path: %s" % self.save_path)
 
 	def restoreModel(self):
-		self.exists = os.path.isfile("./model.ckpt")
+		exists = os.path.isfile("./model.ckpt")
 
 		if exists:
 			self.saver = tf.train.Saver()
@@ -58,6 +57,5 @@ class NeuralNetwork():
 			print("Model restored.")
 			return 0
 		else:
+			print("Cannot find model.")
 			return -1
-
-

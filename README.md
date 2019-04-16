@@ -29,5 +29,5 @@ To change rows, columns and number of bombs of the gameboard. Host the subfolder
 - `-2`  Current Opened Bomb
 - `-3`  Other Opened Bomb
 - `-4`  Misplaced Flag
-- `-5`  Possibly is in the yellow background win page
+- `-5`  Possibly is in the win page with yellow background
 - `-99`  Cannot determine
