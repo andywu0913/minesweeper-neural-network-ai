@@ -1,0 +1,25 @@
+Load neurons weight for previous training
+
+for generation 10
+	update_board_status()
+	random guess and open a block
+	update_board_status()
+	for (borad has any block not opened && board contains no bomb)
+		for row
+			for col
+				put surronding is 0 into queue given this block is 1-8
+		for queue
+			output = model(input)
+			if output_open >= optput_flag
+				open
+			else
+				flag
+			update_board_status()
+			if(input_position_status != boomb)
+				train_model(logits=input, labels=[1, 0])
+			else
+				train_model(logits=input, labels=[0, 1])
+				break
+	click smile to start new game
+
+Save trained neurons weight in this generation
