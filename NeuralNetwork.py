@@ -29,7 +29,7 @@ class NeuralNetwork():
 		self.hidden_output2 = tf.nn.relu(tf.add(tf.matmul(self.hidden_output1, self.A2), self.b2))
 		self.final_output = tf.add(tf.matmul(self.hidden_output2, self.A3), self.b3)
 
-		self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = self.final_output, lables = self.y_target))
+		self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = self.final_output, labels = self.y_target))
 		self.my_opt = tf.train.GradientDescentOptimizer(0.005)
 		self.train_step = self.my_opt.minimize(self.loss)
 		self.init = tf.global_variables_initializer()
@@ -46,18 +46,18 @@ class NeuralNetwork():
 
 	def saveModel(self):
 		saver = tf.train.Saver()
-		save_path = saver.save(self.sess, "./model.ckpt")
+		save_path = saver.save(self.sess, "./nn_trained_model/model.ckpt")
 		print("Model saved in path: {0}".format(save_path))
 
 
 	def restoreModel(self):
-		exists = os.path.isfile("./model.ckpt")
+		exists = os.path.isfile("./nn_trained_model/model.ckpt")
 
 		if exists:
 			saver = tf.train.Saver()
-			saver.restore(self.sess, "./model.ckpt")
+			saver.restore(self.sess, "./nn_trained_model/model.ckpt")
 			print("Model restored.")
 			return 0
 		else:
-			print("Cannot find model.")
+			print("Cannot load model.")
 			return -1
