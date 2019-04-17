@@ -51,7 +51,9 @@ class NeuralNetwork():
 
 
 	def restoreModel(self):
-		exists = os.path.isfile("./nn_trained_model/model.ckpt")
+		dir_path = os.path.dirname(os.path.realpath(__file__))
+		dir_path += '/nn_trained_model/checkpoint'
+		exists = os.path.isfile(dir_path)
 
 		if exists:
 			saver = tf.train.Saver()
