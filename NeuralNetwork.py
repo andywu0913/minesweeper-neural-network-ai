@@ -9,7 +9,7 @@ class NeuralNetwork():
 		self.x_data = tf.placeholder(shape = [None, 8], dtype = tf.float32)
 		self.y_target = tf.placeholder(shape = [None, 1], dtype = tf.float32)
 
-		self.generation = tf.Variable(initial_value = 0, dtype = tf.uint64, name='generation')
+		self.generation = tf.Variable(initial_value = 0, name='generation')
 		# set up neural network
 		# A1 ---> 1st layer weights		8x64
 		# b1 ---> 1st layer bias		1x64
@@ -65,8 +65,8 @@ class NeuralNetwork():
 			print("Cannot load model.")
 			return -1
 
-	def counterIncrement():
+	def counterIncrement(self):
 		return self.sess.run(tf.assign_add(self.generation, 1))
 
-	def getCounter():
+	def getCounter(self):
 		return self.sess.run(self.generation)

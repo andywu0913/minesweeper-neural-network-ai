@@ -15,7 +15,7 @@ nn.restoreModel()
 
 for generation in range(0, 500):
 	print('Current Generation: {0}.'.format(generation + 1))
-	# print('Model Generations: {0}.'.format(nn.getCounter()))
+	print('Model Generations: {0}.'.format(nn.getCounter()))
 	board.update_board_status()
 	if(board.determine_board_status() == 0):
 		random_x, random_y = board.board_position[random.randrange(board.game_row)][random.randrange(board.game_col)]
@@ -71,7 +71,7 @@ for generation in range(0, 500):
 				board.board_status[block[0]][block[1]] = -1
 				# board.update_board_status()
 
-	# nn.counterIncrement()
+	nn.counterIncrement()
 
 	if(board.determine_board_status() == 4):
 		board.click_yellow_face()
