@@ -8,6 +8,25 @@ import cv2
 
 BLOCK_OPEN_THRESHOLD = 0.3
 
+def manipulate_array(array, operation):
+	array = np.insert(array, 4, 999).reshape(3, 3)
+	if operation == 'R90':
+		return np.delete(np.rot90(array).flatten(), 4)
+	if operation == 'R180':
+		return np.delete(np.rot90(array, 2).flatten(), 4)
+	if operation == 'R270':
+		return np.delete(np.rot90(array, 3).flatten(), 4)
+	if operation == 'FUD':
+		return np.delete(np.flipud(array).flatten(), 4)
+	if operation == 'FLR':
+		return np.delete(np.fliplr(array).flatten(), 4)
+	if operation == 'T':
+		return np.delete(array.transpose().flatten(), 4)
+	if operation == 'SUBT':
+		return np.delete(np.rot90(array, 2).transpose().flatten(), 4)
+	else:
+		return False
+
 board = Board.Board(resolution_scale=2)
 nn = NeuralNetwork.NeuralNetwork()
 
@@ -57,19 +76,29 @@ for generation in range(0, 10000):
 			predict_result = nn.predict([predict_input])
 			print(predict_result)
 
+			train_input = []
+			train_input.append(predict_input)
+			train_input.append(manipulate_array(predict_input, 'R90'))
+			train_input.append(manipulate_array(predict_input, 'R180'))
+			train_input.append(manipulate_array(predict_input, 'R270'))
+			train_input.append(manipulate_array(predict_input, 'FUD'))
+			train_input.append(manipulate_array(predict_input, 'FLR'))
+			train_input.append(manipulate_array(predict_input, 'T'))
+			train_input.append(manipulate_array(predict_input, 'SUBT'))
+			# print(np.array(train_input))
+
 			x, y = board.board_position[block[0]][block[1]]
 			if predict_result >= BLOCK_OPEN_THRESHOLD: #BLOCK_OPEN_THRESHOLD
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale)
 				board.update_board_status()
 				if board.board_status[block[0]][block[1]] == -2:
-					nn.trainingData([predict_input], [[0.1]])
+					nn.trainingData(train_input, np.full((8, 1), 0.1))
 					break
 				else:
-					nn.trainingData([predict_input], [[1.0]])
+					nn.trainingData(train_input, np.full((8, 1), 1.0))
 			else:
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale, button = 'right')
 				board.board_status[block[0]][block[1]] = -1
-				# board.update_board_status()
 
 	nn.counterIncrement()
 
@@ -77,4 +106,7 @@ for generation in range(0, 10000):
 		board.click_yellow_face()
 
 	if generation % 10 == 0:
+		nn.saveModel(False)
+
+	if generation % 100 == 0:
 		nn.saveModel(nn.getCounter())

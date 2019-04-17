@@ -17,8 +17,10 @@ class NeuralNetwork():
 		# b1 ---> 1st layer bias		1x64
 		# A2 ---> 2nd layer weights		64x64
 		# b2 ---> 2nd layer bias		1x64
-		# A3 ---> output layer weights	64x1
-		# b3 ---> output layer bias		1x1
+		# A3 ---> 3nd layer weights		64x64
+		# b3 ---> 3nd layer bias		1x64
+		# A4 ---> output layer weights	64x1
+		# b4 ---> output layer bias		1x1
 		self.hidden_layer_nodes = 64
 
 		self.A1 = tf.Variable(tf.random_normal(shape = [8, self.hidden_layer_nodes]), name = 'A1')
