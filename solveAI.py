@@ -13,9 +13,9 @@ nn = NeuralNetwork.NeuralNetwork()
 
 nn.restoreModel()
 
-for generation in range(0, 500):
-	print('Current Generation: {0}.'.format(generation + 1))
-	print('Model Generations: {0}.'.format(nn.getCounter()))
+for generation in range(0, 10000):
+	print('Current Generation: {0}.'.format(generation))
+	print('Model Cumulative Generations: {0}.'.format(nn.getCounter()))
 	board.update_board_status()
 	if(board.determine_board_status() == 0):
 		random_x, random_y = board.board_position[random.randrange(board.game_row)][random.randrange(board.game_col)]
@@ -62,7 +62,7 @@ for generation in range(0, 500):
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale)
 				board.update_board_status()
 				if board.board_status[block[0]][block[1]] == -2:
-					nn.trainingData([predict_input], [[0.0]])
+					nn.trainingData([predict_input], [[0.1]])
 					break
 				else:
 					nn.trainingData([predict_input], [[1.0]])
@@ -76,5 +76,5 @@ for generation in range(0, 500):
 	if(board.determine_board_status() == 4):
 		board.click_yellow_face()
 
-	if generation % 50 == 0:
-		nn.saveModel()
+	if generation % 10 == 0:
+		nn.saveModel(nn.getCounter())
