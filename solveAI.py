@@ -22,9 +22,9 @@ for generation in range(0,10):
 		board.update_board_status()
 		print('Start New Game.')
 
-	frontier = set()
 	while board.determine_board_status() == 1:
 		print('while')
+		frontier = set()
 		board.update_board_status()
 		for row in range(0, board.game_row):
 			for col in range(0, board.game_col):
@@ -33,7 +33,7 @@ for generation in range(0,10):
 						for j in range(max(0, col - 1), min(board.game_col, col + 2)):
 							if i == row and j == col:
 								continue
-							elif board.board_status[i, j] == 0:
+							elif board.board_status[i][j] == 0:
 								frontier.add((i, j));
 		print(frontier)
 
@@ -70,9 +70,7 @@ for generation in range(0,10):
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale, button = 'right')
 				board.board_status[block[0]][block[1]] = -1
 				# board.update_board_status()
-		
-	
-	
+
 	if(board.determine_board_status() == 4):
 		board.click_yellow_face()
 
