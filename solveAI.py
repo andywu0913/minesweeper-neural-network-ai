@@ -13,8 +13,9 @@ nn = NeuralNetwork.NeuralNetwork()
 
 nn.restoreModel()
 
-for generation in range(0,10):
-	print('New Generation.')
+for generation in range(0, 500):
+	print('Current Generation: {0}.'.format(generation + 1))
+	# print('Model Generations: {0}.'.format(nn.getCounter()))
 	board.update_board_status()
 	if(board.determine_board_status() == 0):
 		random_x, random_y = board.board_position[random.randrange(board.game_row)][random.randrange(board.game_col)]
@@ -23,7 +24,6 @@ for generation in range(0,10):
 		print('Start New Game.')
 
 	while board.determine_board_status() == 1:
-		print('while')
 		frontier = set()
 		board.update_board_status()
 		for row in range(0, board.game_row):
@@ -35,7 +35,7 @@ for generation in range(0,10):
 								continue
 							elif board.board_status[i][j] == 0:
 								frontier.add((i, j));
-		print(frontier)
+		# print(frontier)
 
 		for block in frontier:
 			left   = (True if block[1] == 0                    else False)
@@ -55,7 +55,7 @@ for generation in range(0,10):
 
 			# print(predict_input)
 			predict_result = nn.predict([predict_input])
-			# print(predict_result)
+			print(predict_result)
 
 			x, y = board.board_position[block[0]][block[1]]
 			if predict_result >= BLOCK_OPEN_THRESHOLD: #BLOCK_OPEN_THRESHOLD
@@ -71,8 +71,10 @@ for generation in range(0,10):
 				board.board_status[block[0]][block[1]] = -1
 				# board.update_board_status()
 
+	# nn.counterIncrement()
+
 	if(board.determine_board_status() == 4):
 		board.click_yellow_face()
 
-
-nn.saveModel()
+	if generation % 50 == 0:
+		nn.saveModel()

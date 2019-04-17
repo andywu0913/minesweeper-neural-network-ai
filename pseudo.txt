@@ -15,11 +15,11 @@ for generation 10
 			if output >= threshold
 				open
 				update_board_status()
-				if(input_position_status 0= boomb)
+				if(input_position_status == boomb)
 					train_model(logits=input, labels=0)
+					break
 				else
 					train_model(logits=input, labels=1)
-					break
 			else
 				flag
 				update_board_status()

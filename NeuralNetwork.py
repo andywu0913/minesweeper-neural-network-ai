@@ -64,3 +64,9 @@ class NeuralNetwork():
 		else:
 			print("Cannot load model.")
 			return -1
+
+	def counterIncrement():
+		return self.sess.run(tf.assign_add(self.generation, 1))
+
+	def getCounter():
+		return self.sess.run(self.generation)
