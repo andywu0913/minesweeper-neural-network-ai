@@ -7,11 +7,11 @@ class NeuralNetwork():
 	def __init__(self):
 		self.sess = tf.Session()
 
-		self.x_data = tf.placeholder(shape = [None, 8], dtype = tf.float32)
+		self.x_data = tf.placeholder(shape = [None, 24], dtype = tf.float32)
 		self.y_target = tf.placeholder(shape = [None, 1], dtype = tf.float32)
 
 		self.generation = tf.Variable(initial_value = 0, name='generation')
-		
+
 		# set up neural network
 		# A1 ---> 1st layer weights		8x64
 		# b1 ---> 1st layer bias		1x64
@@ -21,9 +21,9 @@ class NeuralNetwork():
 		# b3 ---> 3nd layer bias		1x64
 		# A4 ---> output layer weights	64x1
 		# b4 ---> output layer bias		1x1
-		self.hidden_layer_nodes = 64
+		self.hidden_layer_nodes = 96
 
-		self.A1 = tf.Variable(tf.random_normal(shape = [8, self.hidden_layer_nodes]), name = 'A1')
+		self.A1 = tf.Variable(tf.random_normal(shape = [24, self.hidden_layer_nodes]), name = 'A1')
 		self.b1 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes]), name = 'b1')
 		
 		self.A2 = tf.Variable(tf.random_normal(shape = [self.hidden_layer_nodes, self.hidden_layer_nodes]), name = 'A2')
