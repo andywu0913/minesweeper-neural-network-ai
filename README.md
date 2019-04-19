@@ -2,7 +2,7 @@
 
 AI project for CS445.
 
-This project is still under construction.
+This is an ongoing project. Any effective outcome is not guaranteed.
 
 To change rows, columns and number of bombs of the gameboard. Host the subfolder *minesweeper* on webserver such as Apache before opening the html files. It uses cookies to keep track of the gameboard configuration.
 

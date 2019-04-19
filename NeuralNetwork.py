@@ -13,13 +13,13 @@ class NeuralNetwork():
 		self.generation = tf.Variable(initial_value = 0, name='generation')
 
 		# set up neural network
-		# A1 ---> 1st layer weights		8x64
-		# b1 ---> 1st layer bias		1x64
-		# A2 ---> 2nd layer weights		64x64
-		# b2 ---> 2nd layer bias		1x64
-		# A3 ---> 3nd layer weights		64x64
-		# b3 ---> 3nd layer bias		1x64
-		# A4 ---> output layer weights	64x1
+		# A1 ---> 1st layer weights		24x96
+		# b1 ---> 1st layer bias		1x96
+		# A2 ---> 2nd layer weights		96x96
+		# b2 ---> 2nd layer bias		1x96
+		# A3 ---> 3nd layer weights		96x96
+		# b3 ---> 3nd layer bias		1x96
+		# A4 ---> output layer weights	96x1
 		# b4 ---> output layer bias		1x1
 		self.hidden_layer_nodes = 96
 
