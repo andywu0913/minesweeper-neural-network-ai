@@ -11,6 +11,7 @@ class NeuralNetwork():
 		self.y_target = tf.placeholder(shape = [None, 1], dtype = tf.float32)
 
 		self.generation = tf.Variable(initial_value = 0, name='generation')
+		self.step_counter = np.array([], dtype=int)
 
 		# set up neural network
 		# A1 ---> 1st layer weights		24x96
@@ -59,8 +60,10 @@ class NeuralNetwork():
 		saver = tf.train.Saver()
 		if generation == False:
 			save_path = saver.save(self.sess, './nn_trained_model/model.ckpt')
+			np.save('./nn_trained_model/step_counter.npy', self.step_counter)
 		else:
 			save_path = saver.save(self.sess, './nn_trained_model/generation_{0}/model.ckpt'.format(generation))
+			np.save('./nn_trained_model/generation_{0}/step_counter.npy'.format(generation), self.step_counter)
 		print('Model saved in path: {0}'.format(save_path))
 
 
@@ -72,6 +75,7 @@ class NeuralNetwork():
 		if exists:
 			saver = tf.train.Saver()
 			saver.restore(self.sess, './nn_trained_model/model.ckpt')
+			self.step_counter = np.load('./nn_trained_model/step_counter.npy')
 			print('Model restored.')
 			return 0
 		else:
