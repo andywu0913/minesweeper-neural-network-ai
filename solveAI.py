@@ -4,7 +4,6 @@ import pyautogui
 import tensorflow as tf
 import Board
 import NeuralNetwork
-import cv2
 
 BLOCK_OPEN_THRESHOLD = 0.5
 
@@ -77,6 +76,7 @@ for generation in range(0, 10000):
 		board.update_board_status()
 		print('Start New Game.')
 
+	opened_count = 0
 	while board.determine_board_status() == 1:
 		frontier = set()
 		board.update_board_status()
@@ -106,6 +106,7 @@ for generation in range(0, 10000):
 			x, y = board.board_position[row][col]
 			if predict_result >= BLOCK_OPEN_THRESHOLD: #BLOCK_OPEN_THRESHOLD
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale)
+				opened_count += 1
 				board.update_board_status()
 				if board.board_status[row][col] == -2:
 					nn.trainingData(train_input, np.full((8, 1), 0.1))
@@ -116,6 +117,7 @@ for generation in range(0, 10000):
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale, button = 'right')
 				board.board_status[row][col] = -1
 
+	nn.append_opened_counter(opened_count)
 	nn.counterIncrement()
 
 	if(board.determine_board_status() == 4):

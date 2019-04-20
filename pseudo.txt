@@ -1,6 +1,6 @@
 Load neurons weight for previous training
 
-for generation 10
+for generation in 10
 	update_board_status()
 	random guess and open a block
 	update_board_status()
@@ -8,9 +8,10 @@ for generation 10
 	while (borad has any block not opened && board contains no bomb)
 		for row
 			for col
-				put surronding is 0 into queue given this block is 1-8
+				put unopened surronding(frontier) into queue given this block is 1-8(number)
 
 		for queue
+			input = gather 5x5 surronding and compose them
 			output = model(input)
 			if output >= threshold
 				open
