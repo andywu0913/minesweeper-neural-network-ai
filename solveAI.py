@@ -66,7 +66,7 @@ nn = NeuralNetwork.NeuralNetwork()
 
 nn.restoreModel()
 
-for generation in range(0, 10000):
+for generation in range(0, 102):
 	print('Current Generation: {0}.'.format(generation))
 	print('Model Cumulative Generations: {0}.'.format(nn.getCounter()))
 	board.update_board_status()
@@ -84,7 +84,7 @@ for generation in range(0, 10000):
 			for col in range(0, board.game_col):
 				if 1 <= board.board_status[row][col] <= 8:
 					add_to_frontier_set(frontier, row, col)
-		print(frontier)
+		# print(frontier)
 
 		for row, col in frontier:
 			predict_input = create_predict_input(row, col)
