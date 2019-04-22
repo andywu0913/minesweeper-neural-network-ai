@@ -31,3 +31,12 @@ To change rows, columns and number of bombs of the gameboard. Host the subfolder
 - `-4`  Misplaced Flag
 - `-5`  Possibly is in the win page with yellow background
 - `-99`  Cannot determine
+
+## Current Progress
+
+Right now we have trained our model by playing 25,000 times of the game. Our traing is still ongoing and we will keep updating the latest model to the folder.
+
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_trained_model/generation_25000/stat.png" width="600px">
+
+
+
