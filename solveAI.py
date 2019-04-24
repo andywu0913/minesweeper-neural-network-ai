@@ -25,21 +25,6 @@ def create_predict_input(row , col):
 				predict_input.append(board.board_status[i][j])
 			else:
 				predict_input.append(0.5)
-
-	# left   = (True if col == 0                    else False)
-	# right  = (True if col == (board.game_col - 1) else False)
-	# top    = (True if row == 0                    else False)
-	# bottom = (True if row == (board.game_row - 1) else False)
-	# predict_input = [
-	# 	board.board_status[row - 1][col - 1] if not top    and not left  else 0.5,
-	# 	board.board_status[row - 1][col    ] if not top                  else 0.5,
-	# 	board.board_status[row - 1][col + 1] if not top    and not right else 0.5,
-	# 	board.board_status[row    ][col - 1] if not                left  else 0.5,
-	# 	board.board_status[row    ][col + 1] if not                right else 0.5,
-	# 	board.board_status[row + 1][col - 1] if not bottom and not left  else 0.5,
-	# 	board.board_status[row + 1][col    ] if not bottom               else 0.5,
-	# 	board.board_status[row + 1][col + 1] if not bottom and not right else 0.5
-	# ]
 	return np.array(predict_input)
 
 def manipulate_array(array, operation):
@@ -120,8 +105,12 @@ for generation in range(0, 102):
 	nn.append_opened_counter(opened_count)
 	nn.counterIncrement()
 
-	if(board.determine_board_status() == 4):
+	board_status = board.determine_board_status()
+	if board_status == 4:
 		board.click_yellow_face()
+	elif board_status == 3:
+		if board.close_yellow_page():
+			board.click_yellow_face()
 
 	if generation > 0 and generation % 10 == 0:
 		nn.saveModel(False)

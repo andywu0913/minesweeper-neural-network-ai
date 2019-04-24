@@ -4,6 +4,8 @@ AI project for CS445.
 
 This is an ongoing project. Any effective outcome is not guaranteed.
 
+Start a new minesweeper game by opening `minesweeper/minecore.html` and run the file `solveAI.py` to make neural network working.
+
 To change rows, columns and number of bombs of the gameboard. Host the subfolder *minesweeper* on webserver such as Apache before opening the html files. It uses cookies to keep track of the gameboard configuration.
 
 - `resolution_scale` should change to `2` when running on Mac retina display or other devices that doubled the pixels from its resolution.
@@ -34,9 +36,6 @@ To change rows, columns and number of bombs of the gameboard. Host the subfolder
 
 ## Current Progress
 
-Right now we have trained our model by playing 40,000 times of the game. Our traing is still ongoing and we will keep updating the latest model to the folder.
+Right now we have trained our model by playing 40,000 times of the game. The size of the game board is 24x32 with 99 bombs. Our traing is still ongoing and we will keep updating the latest model to the folder.
 
 <img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_trained_model/generation_40000/stat.png" width="600px">
-
-
-
