@@ -36,6 +36,6 @@ To change rows, columns and number of bombs of the gameboard. Host the subfolder
 
 ## Current Progress
 
-Right now we have trained our model by playing 40,000 times of the game. The size of the game board is 24x32 with 99 bombs. Our traing is still ongoing and we will keep updating the latest model to the folder.
+Right now we have trained our model by playing 60,000 times of the game. The size of the game board is 24x32 with 99 bombs. Our traing is still ongoing and we will keep updating the latest model to the folder.
 
-<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_trained_model/generation_40000/stat.png" width="600px">
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_trained_model/generation_60000/stat.png" width="600px">
