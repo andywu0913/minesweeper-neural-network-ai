@@ -75,7 +75,7 @@ for generation in range(0, 102):
 			predict_input = create_predict_input(row, col)
 			# print(predict_input)
 			predict_result = nn.predict([predict_input])
-			print(predict_result)
+			print('Predit: {0} \t Action: {1}'.format(predict_result, 'Open' if predict_result >= BLOCK_OPEN_THRESHOLD else 'Flag'))
 
 			train_input = []
 			train_input.append(predict_input)
@@ -89,7 +89,7 @@ for generation in range(0, 102):
 			# print(np.array(train_input))
 
 			x, y = board.board_position[row][col]
-			if predict_result >= BLOCK_OPEN_THRESHOLD: #BLOCK_OPEN_THRESHOLD
+			if predict_result >= BLOCK_OPEN_THRESHOLD:
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale)
 				opened_count += 1
 				board.update_board_status()
@@ -102,11 +102,12 @@ for generation in range(0, 102):
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale, button = 'right')
 				board.board_status[row][col] = -1
 
+	print(opened_count)
 	nn.append_opened_counter(opened_count)
 	nn.counterIncrement()
 
 	board_status = board.determine_board_status()
-	if board_status == 4:
+	if board_status == 4 or board_status == 2:
 		board.click_yellow_face()
 	elif board_status == 3:
 		if board.close_yellow_page():

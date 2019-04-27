@@ -176,6 +176,16 @@ class Board():
 				clicked = True
 			except Exception as e:
 				pass
+				
+		if not clicked:
+			try:
+				img = Image.open(open('img_recognition_sample/facesmile.png', 'rb'))
+				img = img.resize((self.resolution_scale * x for x in img.size), Image.BILINEAR)
+				tl_x, tl_y = pyautogui.locateCenterOnScreen(img, grayscale=False, confidence=0.95)
+				pyautogui.click(tl_x / self.resolution_scale, tl_y / self.resolution_scale)
+				clicked = True
+			except Exception as e:
+				pass
 
 		return clicked
 
