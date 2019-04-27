@@ -13,6 +13,7 @@ class NeuralNetwork():
 
 		self.generation = tf.Variable(initial_value = 0, name = 'generation')
 		self.opened_counter = np.array([], dtype = int)
+		self.win_counter = np.array([], dtype = int)
 
 		# set up neural network
 		# A1 ---> 1st layer weights		24x120
@@ -68,9 +69,11 @@ class NeuralNetwork():
 		if generation == False:
 			save_path = saver.save(self.sess, './nn_trained_model/model.ckpt')
 			np.save('./nn_trained_model/opened_counter.npy', self.opened_counter)
+			np.save('./nn_trained_model/win_counter.npy', self.win_counter)
 		else:
 			save_path = saver.save(self.sess, './nn_trained_model/generation_{0}/model.ckpt'.format(generation))
 			np.save('./nn_trained_model/generation_{0}/opened_counter.npy'.format(generation), self.opened_counter)
+			np.save('./nn_trained_model/generation_{0}/win_counter.npy'.format(generation), self.win_counter)
 			plt.plot(self.opened_counter, 'k-')
 			plt.title('Numbers of block NN opened per Game')
 			plt.xlabel('Game')
@@ -90,6 +93,7 @@ class NeuralNetwork():
 			saver = tf.train.Saver()
 			saver.restore(self.sess, './nn_trained_model/model.ckpt')
 			self.opened_counter = np.load('./nn_trained_model/opened_counter.npy')
+			self.win_counter = np.load('./nn_trained_model/win_counter.npy')
 			print('Model restored.')
 			return 0
 		else:
@@ -108,3 +112,6 @@ class NeuralNetwork():
 	def append_opened_counter(self, count):
 		self.opened_counter = np.append(self.opened_counter, count)
 
+
+	def append_win_counter(self, generation):
+		self.win_counter = np.append(self.win_counter, generation)
