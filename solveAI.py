@@ -110,6 +110,7 @@ for generation in range(0, 102):
 	if board_status == 4 or board_status == 2:
 		board.click_yellow_face()
 	elif board_status == 3:
+		nn.append_win_counter(nn.getCounter())
 		if board.close_yellow_page():
 			board.click_yellow_face()
 
