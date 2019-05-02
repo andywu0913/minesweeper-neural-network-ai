@@ -70,6 +70,8 @@ for generation in range(0, 102):
 				if 1 <= board.board_status[row][col] <= 8:
 					add_to_frontier_set(frontier, row, col)
 		# print(frontier)
+		if len(frontier) == 0:
+			break
 
 		for row, col in frontier:
 			predict_input = create_predict_input(row, col)
@@ -107,12 +109,11 @@ for generation in range(0, 102):
 	nn.counterIncrement()
 
 	board_status = board.determine_board_status()
-	if board_status == 4 or board_status == 2:
-		board.click_yellow_face()
-	elif board_status == 3:
+	if board_status == 3:
 		nn.append_win_counter(nn.getCounter())
-		if board.close_yellow_page():
-			board.click_yellow_face()
+		board.close_yellow_page()
+
+	board.click_yellow_face()
 
 	if generation > 0 and generation % 10 == 0:
 		nn.saveModel(False)
