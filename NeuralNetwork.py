@@ -22,8 +22,8 @@ class NeuralNetwork():
 		# b2 ---> 2nd layer bias		1x120
 		# A3 ---> 3nd layer weights		120x120
 		# b3 ---> 3nd layer bias		1x120
-		# A4 ---> 3nd layer weights		120x120
-		# b4 ---> 3nd layer bias		1x120
+		# A4 ---> 4nd layer weights		120x120
+		# b4 ---> 4nd layer bias		1x120
 		# A5 ---> output layer weights	120x1
 		# b5 ---> output layer bias		1x1
 		self.hidden_layer_nodes = 120
