@@ -105,8 +105,9 @@ for generation in range(0, 102):
 				board.board_status[row][col] = -1
 
 	print(opened_count)
-	nn.append_opened_counter(opened_count)
-	nn.counterIncrement()
+	if opened_count > 1:
+		nn.append_opened_counter(opened_count)
+		nn.counterIncrement()
 
 	board_status = board.determine_board_status()
 	if board_status == 3:
