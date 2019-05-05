@@ -19,7 +19,7 @@ class Board():
 
 		self.locate_gameBoard_coordinate()
 		self.make_position_table()
-		pyautogui.PAUSE = 0.05
+		pyautogui.PAUSE = 0.07
 		np.set_printoptions(linewidth=np.inf)
 
 	def locate_gameBoard_coordinate(self):

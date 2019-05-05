@@ -95,6 +95,8 @@ for generation in range(0, 102):
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale)
 				opened_count += 1
 				board.update_board_status()
+				if board.determine_board_status() == 3 or board.determine_board_status() == -99:
+					break
 				if board.board_status[row][col] == -2:
 					nn.trainingData(train_input, np.full((8, 1), 0.1))
 					break
@@ -105,8 +107,9 @@ for generation in range(0, 102):
 				board.board_status[row][col] = -1
 
 	print(opened_count)
-	nn.append_opened_counter(opened_count)
-	nn.counterIncrement()
+	if opened_count > 0:
+		nn.append_opened_counter(opened_count)
+		nn.counterIncrement()
 
 	board_status = board.determine_board_status()
 	if board_status == 3:
