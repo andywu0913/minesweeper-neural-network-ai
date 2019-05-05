@@ -68,7 +68,7 @@ while board.determine_board_status() == 1:
 		tmp.pop(max_index)
 		x, y = board.board_position[max_index[0]][max_index[1]]
 		pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale)
-		print('click ({0}, {1})'.format(max_index[0], max_index[1]))
+		print('({0}, {1}) \t Confidence: {2} \t Action: Open'.format(max_index[0], max_index[1], max_value))
 		board.update_board_status()
 		# if board.board_status[max_index[0]][max_index[1]] == -2:
 			# print(tmp)
@@ -78,6 +78,7 @@ while board.determine_board_status() == 1:
 		tmp.pop(min_index)
 		x, y = board.board_position[min_index[0]][min_index[1]]
 		pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale, button = 'right')
+		print('({0}, {1}) \t Confidence: {2} \t Action: Flag'.format(max_index[0], max_index[1], min_value))
 		board.board_status[min_index[0]][min_index[1]] = -1
 	
 

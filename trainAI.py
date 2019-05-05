@@ -78,7 +78,7 @@ for generation in range(0, 102):
 			predict_input = create_predict_input(row, col)
 			# print(predict_input)
 			predict_result = nn.predict([predict_input])
-			print('Predit: {0} \t Action: {1}'.format(predict_result, 'Open' if predict_result >= BLOCK_OPEN_THRESHOLD else 'Flag'))
+			print('({0}, {1}) \t Confidence: {2} \t Action: {3}'.format(row, col, predict_result, 'Open' if predict_result >= BLOCK_OPEN_THRESHOLD else 'Flag'))
 
 			train_input = []
 			train_input.append(predict_input)
@@ -107,7 +107,7 @@ for generation in range(0, 102):
 				pyautogui.click((board.screen_start_x + x) / board.resolution_scale, (board.screen_start_y + y) / board.resolution_scale, button = 'right')
 				board.board_status[row][col] = -1
 
-	print(opened_count)
+	print('Opened block counter: {0}'.format(opened_count))
 	if opened_count > 0:
 		nn.append_opened_counter(opened_count)
 		nn.counterIncrement()
