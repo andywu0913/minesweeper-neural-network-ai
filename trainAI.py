@@ -46,6 +46,7 @@ def manipulate_array(array, operation):
 	else:
 		return False
 
+pyautogui.press('enter')
 board = Board.Board(resolution_scale=2)
 nn = NeuralNetwork.NeuralNetwork()
 
