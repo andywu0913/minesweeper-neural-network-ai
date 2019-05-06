@@ -75,6 +75,8 @@ for generation in range(0, 102):
 			break
 
 		for row, col in frontier:
+			if board.board_status[row][col] != 0:
+				continue
 			predict_input = create_predict_input(row, col)
 			# print(predict_input)
 			predict_result = nn.predict([predict_input])
