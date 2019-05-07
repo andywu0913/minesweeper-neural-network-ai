@@ -44,6 +44,6 @@ In the first 100,000 times of our neural network plays the game, we set the size
 
 ### Games Generation 100,000 above
 
-After 100,000 times of games played, we set the size of the game board to 8x8 with 10 bombs to let our neural network starts learning the blocks near the border. Right now the neural network has gone through 190,000 generations of playing.
+After 100,000 times of games played, we set the size of the game board to 8x8 with 10 bombs to let our neural network starts learning the blocks near the border. Right now the neural network has gone through 200,000 generations of playing.
 
-<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_trained_model/generation_190000/stat.png" width="600px">
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_trained_model/generation_200000/stat.png" width="600px">
