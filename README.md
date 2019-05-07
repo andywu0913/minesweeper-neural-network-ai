@@ -1,8 +1,12 @@
 # Minesweeper Neural Network AI
 
-AI project for CS445.
+This is a course project in CS445. Any effective outcome is not guaranteed.
 
-This is an ongoing project. Any effective outcome is not guaranteed.
+## Neural Network Structure
+
+The neural network has 4 hidden layers with each of them contain 120 neurons. It takes a 1x24 matrix as its input which represents 2 outer cyclic surroundings, and outputs a value between 0 and 1 that shows how confident is opening the middle block without getting a bomb.
+
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_structure.png" width="600px">
 
 ## Usage
 
