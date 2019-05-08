@@ -6,7 +6,7 @@ This is a course project in CS445. Any effective outcome is not guaranteed.
 
 The neural network has 4 hidden layers with each of them contain 120 neurons. It takes a 1x24 matrix as its input which represents 2 outer cyclic surroundings, and outputs a value between 0 and 1 that shows how confident is opening the middle block without getting a bomb.
 
-<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_structure.png" width="600px">
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/nn_structure.png" width="750px">
 
 ## Usage
 
@@ -26,6 +26,8 @@ Run the command below to start training the neural network.
 python3.7 trainAI.py
 ````
 
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/demo_training.gif" width="600px">
+
 ### Testing
 
 Leave the browser(minesweeper) half of the screen large and the terminal the rest of the screen.
@@ -35,6 +37,8 @@ Run the command below to start testing the neural network.
 ````
 python3.7 solveAI.py
 ````
+
+<img src="https://github.com/andywu0913/minesweeper-neural-network-ai/blob/master/demo_testing.gif" width="600px">
 
 ## Development Environment
 
