@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import more_itertools as mit
 
-step = 500
+step = 1000
 
 file = str(input()).replace(' ', '')
 opened_counter = np.load(file)
@@ -48,7 +48,7 @@ color = 'black'
 ax2.set_ylabel('Number of Wins in every {0} Games'.format(step), color=color)
 ax2.plot(range(100000, len(opened_counter[100000:-step]) + 100000, step), win_counter_avg, color=color, alpha=1)
 ax2.tick_params(axis='y', labelcolor=color)
-ax2.set_ylim(0, 50)
+ax2.set_ylim(0, 120)
 
 fig.tight_layout()
 plt.show()
